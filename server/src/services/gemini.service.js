@@ -1,149 +1,149 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import History from "../models/History.js";
+// import { GoogleGenerativeAI } from "@google/generative-ai";
+// import History from "../models/History.js";
 
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash",
-});
+// const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// const model = genAI.getGenerativeModel({
+//   model: "gemini-2.5-flash",
+// });
 
 
-const cleanJson = (text) => {
-  return text
-    .replace(/```json/g, "")
-    .replace(/```/g, "")
-    .trim();
-};
+// const cleanJson = (text) => {
+//   return text
+//     .replace(/```json/g, "")
+//     .replace(/```/g, "")
+//     .trim();
+// };
 
-const callGemini = async (prompt) => {
-  try {
-    const result = await model.generateContent(prompt);
+// const callGemini = async (prompt) => {
+//   try {
+//     const result = await model.generateContent(prompt);
 
-    return cleanJson(result.response.text());
-  } catch (error) {
-    console.error("Gemini Error:");
-    console.error(error);
+//     return cleanJson(result.response.text());
+//   } catch (error) {
+//     console.error("Gemini Error:");
+//     console.error(error);
 
-    throw error;
-  }
-};
+//     throw error;
+//   }
+// };
 
-export const reviewCodeService = async ({
-  userId,
-  language,
-  code,
-}) => {
-  const prompt = `
-You are a Senior Software Engineer.
+// export const reviewCodeService = async ({
+//   userId,
+//   language,
+//   code,
+// }) => {
+//   const prompt = `
+// You are a Senior Software Engineer.
 
-Review this ${language} code.
+// Review this ${language} code.
 
-Return ONLY valid JSON.
+// Return ONLY valid JSON.
 
-{
-  "score":0,
-  "summary":"",
-  "issues":[
-      {
-        "severity":"High",
-        "title":"",
-        "description":""
-      }
-  ],
-  "suggestions":[]
-}
+// {
+//   "score":0,
+//   "summary":"",
+//   "issues":[
+//       {
+//         "severity":"High",
+//         "title":"",
+//         "description":""
+//       }
+//   ],
+//   "suggestions":[]
+// }
 
-Code
+// Code
 
-${code}
-`;
+// ${code}
+// `;
 
-  const response = await callGemini(prompt);
+//   const response = await callGemini(prompt);
 
-  const parsed = JSON.parse(response);
+//   const parsed = JSON.parse(response);
 
-  await History.create({
-    user: userId,
-    feature: "code-review",
-    title: `Code Review (${language})`,
-    language,
-    input: code,
-    output: parsed,
-  });
+//   await History.create({
+//     user: userId,
+//     feature: "code-review",
+//     title: `Code Review (${language})`,
+//     language,
+//     input: code,
+//     output: parsed,
+//   });
 
-  return parsed;
-};
+//   return parsed;
+// };
 
 
-export const generateReadmeService = async ({
-  userId,
-  projectName,
-  description,
-  techStack,
-  features,
-}) => {
-  const prompt = `
-Generate a professional GitHub README.
+// export const generateReadmeService = async ({
+//   userId,
+//   projectName,
+//   description,
+//   techStack,
+//   features,
+// }) => {
+//   const prompt = `
+// Generate a professional GitHub README.
 
-Project Name
+// Project Name
 
-${projectName}
+// ${projectName}
 
-Description
+// Description
 
-${description}
+// ${description}
 
-Tech Stack
+// Tech Stack
 
-${techStack}
+// ${techStack}
 
-Features
+// Features
 
-${features}
+// ${features}
 
-Return markdown only.
-`;
+// Return markdown only.
+// `;
 
-  const result = await model.generateContent(prompt);
+//   const result = await model.generateContent(prompt);
 
-  const markdown = result.response.text();
+//   const markdown = result.response.text();
 
-  await History.create({
-    user: userId,
-    feature: "readme-generator",
-    title: projectName,
-    input: description,
-    output: markdown,
-  });
+//   await History.create({
+//     user: userId,
+//     feature: "readme-generator",
+//     title: projectName,
+//     input: description,
+//     output: markdown,
+//   });
 
-  return markdown;
-};
+//   return markdown;
+// };
 
-export const generateUnitTestService = async ({
-  userId,
-  language,
-  code,
-}) => {
-  const prompt = `
-Generate unit tests for the following ${language} code.
+// export const generateUnitTestService = async ({
+//   userId,
+//   language,
+//   code,
+// }) => {
+//   const prompt = `
+// Generate unit tests for the following ${language} code.
 
-Return only code.
+// Return only code.
 
-${code}
-`;
+// ${code}
+// `;
 
-  const result = await model.generateContent(prompt);
+//   const result = await model.generateContent(prompt);
 
-  const tests = result.response.text();
+//   const tests = result.response.text();
 
-  await History.create({
-    user: userId,
-    feature: "unit-test-generator",
-    title: `Unit Test (${language})`,
-    language,
-    input: code,
-    output: tests,
-  });
+//   await History.create({
+//     user: userId,
+//     feature: "unit-test-generator",
+//     title: `Unit Test (${language})`,
+//     language,
+//     input: code,
+//     output: tests,
+//   });
 
-  return tests;
-};
+//   return tests;
+// };

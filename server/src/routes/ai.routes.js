@@ -1,21 +1,21 @@
-import express from "express";
+// import express from "express";
 
-import protect from "../middleware/auth.middleware.js";
+// import protect from "../middleware/auth.middleware.js";
 
-import {
-  reviewCode,
-  generateReadme,
-  generateUnitTests,
-} from "../controllers/ai.controller.js";
+// import {
+//   reviewCode,
+//   generateReadme,
+//   generateUnitTests,
+// } from "../controllers/ai.controller.js";
 
-const router = express.Router();
+// const router = express.Router();
 
-router.use(protect);
+// router.use(protect);
 
-router.post("/review", reviewCode);
+// router.post("/review", reviewCode);
 
-router.post("/readme", generateReadme);
+// router.post("/readme", generateReadme);
 
-router.post("/unit-test", generateUnitTests);
+// router.post("/unit-test", generateUnitTests);
 
-export default router;
+// export default router;

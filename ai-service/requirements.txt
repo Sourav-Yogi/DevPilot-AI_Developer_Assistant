@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+python-dotenv
+google-generativeai
+chromadb
+sentence-transformers
+langchain
+langchain-community
+langchain-text-splitters
+GitPython
+pydantic

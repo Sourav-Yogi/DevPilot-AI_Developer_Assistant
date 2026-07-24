@@ -1,214 +1,326 @@
-# DevPilot - AI Developer Toolkit
+# 🚀 DevPilot - Repository-Aware AI Developer Assistant
 
-DevPilot is a full-stack MERN application that helps developers automate common development tasks using Google's Gemini AI.
+DevPilot is a full-stack AI-powered developer assistant that enables users to chat with any GitHub repository using Retrieval-Augmented Generation (RAG). It indexes the repository, generates vector embeddings, retrieves relevant source code, and uses Google Gemini to answer repository-specific questions with contextual accuracy.
 
-The application provides AI-powered code reviews, README generation, unit test generation, and keeps a history of all generated results for authenticated users.
-
----
-
-## Features
-
-- User authentication using JWT
-- AI-powered code review
-- Automatic README generation
-- AI-generated unit tests
-- Dashboard with user statistics
-- History of previous AI requests
-- Protected routes
-- Responsive dashboard interface
+Unlike a generic AI chatbot, DevPilot grounds every response in the indexed repository, helping developers understand unfamiliar codebases, architecture, APIs, workflows, and implementation details.
 
 ---
 
-## Tech Stack
+## ✨ Features
 
-### Frontend
+- 🔐 User Authentication (JWT)
+- 📂 GitHub Repository Indexing
+- 🤖 Repository-Aware AI Chat
+- 🧠 Retrieval-Augmented Generation (RAG)
+- 🔍 Semantic Code Search using Vector Embeddings
+- 💬 Context-Aware Multi-turn Conversations
+- 📄 Markdown Response Rendering
+- 📚 Source File Attribution
+- 📊 Repository Dashboard
+- ⚡ FastAPI AI Microservice
+- 🌐 MERN Stack Frontend & Backend
 
-- React 19
+---
+
+# 🏗️ System Architecture
+
+```
+                    +----------------------+
+                    |      React App       |
+                    +----------+-----------+
+                               |
+                               |
+                     REST API (JWT)
+                               |
+                               ▼
+                 +-------------------------+
+                 | Node.js + Express Server |
+                 +-----------+-------------+
+                             |
+                             |
+                    AI Service Requests
+                             |
+                             ▼
+               +---------------------------+
+               |      FastAPI RAG Server    |
+               +-------------+-------------+
+                             |
+         -----------------------------------------------
+         |             |             |                  |
+         ▼             ▼             ▼                  ▼
+ GitHub Clone   Chunk Documents   Generate        ChromaDB
+ Repository      Repository      Embeddings      Vector Store
+                             |
+                             ▼
+                    Semantic Retrieval
+                             |
+                             ▼
+                     Google Gemini API
+                             |
+                             ▼
+                      Repository Answer
+```
+
+---
+
+# 📂 Project Structure
+
+```
+DevPilot
+│
+├── client/                 # React Frontend
+│
+├── server/                 # Node.js Backend
+│
+└── ai-service/             # FastAPI RAG Service
+    │
+    ├── routes/
+    ├── services/
+    │   ├── github_loader.py
+    │   ├── repository_loader.py
+    │   ├── chunker.py
+    │   ├── embedding_service.py
+    │   ├── vector_store.py
+    │   ├── retriever.py
+    │   ├── prompt_builder.py
+    │   ├── gemini_service.py
+    │   └── rag_pipeline.py
+    │
+    └── app.py
+```
+
+---
+
+# ⚙️ Tech Stack
+
+## Frontend
+
+- React.js
 - Vite
-- Tailwind CSS v4
+- Tailwind CSS
 - React Router
 - Axios
-- Lucide React
+- React Markdown
 
-### Backend
+---
+
+## Backend
 
 - Node.js
 - Express.js
 - MongoDB
 - Mongoose
 - JWT Authentication
-- Google Gemini API
 
 ---
 
-## Project Structure
+## AI Service
 
-```
-DevPilot/
-│
-├── client/
-│   ├── src/
-│   ├── public/
-│   └── package.json
-│
-├── server/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   ├── utils/
-│   ├── config/
-│   └── package.json
-│
-└── README.md
-```
+- FastAPI
+- Python
+- Google Gemini 2.5 Flash
 
 ---
 
-## Installation
+## RAG Stack
 
-### Clone the repository
+- Sentence Transformers
+- all-MiniLM-L6-v2
+- ChromaDB
+- Semantic Retrieval
+- Repository Chunking
+
+---
+
+## Dev Tools
+
+- Git
+- GitHub
+- Postman
+
+---
+
+# ⚙️ How It Works
+
+## 1. User Adds Repository
+
+The user submits a public GitHub repository URL.
+
+↓
+
+## 2. Repository Cloning
+
+The AI service clones the repository locally.
+
+↓
+
+## 3. Repository Parsing
+
+Supported source files are loaded.
+
+↓
+
+## 4. Chunking
+
+Large files are split into meaningful chunks.
+
+↓
+
+## 5. Embedding Generation
+
+Each chunk is converted into a dense vector using Sentence Transformers.
+
+↓
+
+## 6. Vector Storage
+
+Embeddings are stored inside ChromaDB.
+
+↓
+
+## 7. User Chat
+
+When a user asks a question:
+
+- The question is embedded.
+- Similar repository chunks are retrieved.
+- Context is sent to Gemini.
+- Gemini generates a repository-grounded response.
+
+---
+
+# 💬 Example Questions
+
+- What does this repository do?
+- Explain the project architecture.
+- Explain authentication flow.
+- How does the database work?
+- Explain this API.
+- Explain this function.
+- How is JWT implemented?
+- Which technologies are used?
+- Explain the folder structure.
+- Suggest improvements.
+
+---
+
+# 📸 Screenshots
+
+> Add screenshots here
+
+- Landing Page
+- Dashboard
+- Repository Indexing
+- AI Chat
+- Repository Details
+
+---
+
+# 🚀 Getting Started
+
+## Clone Repository
 
 ```bash
-git clone https://github.com/your-username/devpilot.git
-
-cd devpilot
+git clone https://github.com/yourusername/devpilot.git
 ```
 
 ---
 
-### Install dependencies
-
-Backend
-
-```bash
-cd server
-npm install
-```
-
-Frontend
+## Frontend
 
 ```bash
 cd client
 npm install
+npm run dev
 ```
 
 ---
 
-## Environment Variables
+## Backend
 
-### Backend (.env)
+```bash
+cd server
+npm install
+npm run dev
+```
+
+---
+
+## AI Service
+
+```bash
+cd ai-service
+
+uv sync
+
+uv run uvicorn app:app --reload
+```
+
+---
+
+# 🔑 Environment Variables
+
+## Backend (.env)
 
 ```env
 PORT=5000
 
-MONGODB_URI=your_mongodb_connection_string
+MONGODB_URI=your_mongodb_uri
 
-JWT_SECRET=your_jwt_secret
+JWT_SECRET=your_secret
 
-GEMINI_API_KEY=your_gemini_api_key
+AI_SERVICE_URL=http://127.0.0.1:8000
 ```
 
-### Frontend (.env)
+---
+
+## AI Service (.env)
 
 ```env
-VITE_API_URL=http://localhost:5000/api
+GEMINI_API_KEY=your_google_gemini_api_key
 ```
 
 ---
 
-## Running the Project
+# 🎯 Future Improvements
 
-### Start Backend
-
-```bash
-cd server
-
-npm run dev
-```
-
-### Start Frontend
-
-```bash
-cd client
-
-npm run dev
-```
+- Hybrid Search (BM25 + Vector Search)
+- Response Streaming
+- Clickable Source Files
+- Repository Visualization
+- Multi-Repository Chat
+- Repository Diff Analysis
+- Codebase Summarization
+- GitHub Pull Request Review
+- File-aware Retrieval
+- Reranking Pipeline
 
 ---
 
-## API Endpoints
+# 🧠 Key Learnings
 
-### Authentication
+Through this project I learned:
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | /api/auth/register | Register user |
-| POST | /api/auth/login | Login user |
-| GET | /api/auth/profile | Get profile |
-
-### AI
-
-| Method | Endpoint |
-|---------|----------|
-| POST | /api/ai/review |
-| POST | /api/ai/readme |
-| POST | /api/ai/tests |
-
-### Dashboard
-
-| Method | Endpoint |
-|---------|----------|
-| GET | /api/dashboard/stats |
-
-### History
-
-| Method | Endpoint |
-|---------|----------|
-| GET | /api/history |
-| GET | /api/history/:id |
-| DELETE | /api/history/:id |
+- Retrieval-Augmented Generation (RAG)
+- Vector Databases (ChromaDB)
+- Semantic Search
+- Embedding Models
+- Prompt Engineering
+- FastAPI Microservices
+- MERN Stack Integration
+- Repository Parsing
+- AI System Design
+- REST API Development
 
 ---
 
-## Authentication Flow
+# 👨‍💻 Author
 
-1. User logs in.
-2. Backend verifies credentials.
-3. JWT token is generated.
-4. Token is stored in localStorage.
-5. Axios interceptor attaches the token to protected requests.
-6. Express middleware validates the token before granting access.
+**Sourav Yogi**
+
+- GitHub: https://github.com/Sourav-Yogi
+- LinkedIn: https://linkedin.com/in/sourav-yogi
 
 ---
 
-## Screenshots
-
-Add screenshots of:
-
-- Login
-- Register
-- Dashboard
-- Code Review
-- README Generator
-- Unit Test Generator
-- History
-
----
-
-## Future Improvements
-
-- Refresh token authentication
-- Markdown editor with live preview
-- Export history as PDF
-- Role-based authorization
-- AI conversation history
-- Better error handling
-- Request caching
-
----
-
-## License
-
-This project is licensed under the MIT License.
+## ⭐ If you found this project helpful, consider giving it a star!
