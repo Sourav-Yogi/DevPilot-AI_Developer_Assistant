@@ -12,5 +12,9 @@ export const extractRepositoryZip = async (zipPath, projectId) => {
     .pipe(unzipper.Extract({ path: extractPath }))
     .promise();
 
+  // 👇 Add these two lines
+  console.log("Extract Path:", extractPath);
+  console.log("Contents:", fs.readdirSync(extractPath));
+
   return extractPath;
 };

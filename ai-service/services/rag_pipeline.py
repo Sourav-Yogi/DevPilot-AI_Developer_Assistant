@@ -13,34 +13,21 @@ from services.gemini_service import GeminiService
 class RAGPipeline:
 
     def __init__(self):
-
-        shared_model = SentenceTransformer(
-            "all-MiniLM-L6-v2"
-        )
+        shared_model = SentenceTransformer("all-MiniLM-L6-v2")
 
         self.github_loader = GitHubLoader()
-
         self.repository_loader = RepositoryLoader()
-
         self.chunker = CodeChunker()
-
-        self.embedding_service = EmbeddingService(
-            shared_model
-        )
-
+        self.embedding_service = EmbeddingService(shared_model)
         self.vector_store = VectorStore()
-
-        self.retriever = Retriever(
-            self.embedding_service
-        )
-
+        self.retriever = Retriever(self.embedding_service)
         self.prompt_builder = PromptBuilder()
-
         self.gemini_service = GeminiService()
 
-    # -----------------------------
+    # --------------------------------------------------
     # Repository Indexing
-    # -----------------------------
+    # --------------------------------------------------
+
     def index_repository(
         self,
         project_id: str,
@@ -56,20 +43,18 @@ class RAGPipeline:
         elif local_path:
             repo_path = local_path
         else:
-            raise ValueError("Either github_url or local_path is required.")
+            raise ValueError(
+                "Either github_url or local_path is required."
+            )
 
-        documents = self.repository_loader.load_repository(
-            repo_path
-        )
+        documents = self.repository_loader.load_repository(repo_path)
 
         if not documents:
             raise ValueError(
                 "No supported source code files found in the repository."
             )
 
-        chunks = self.chunker.chunk_documents(
-            documents
-        )
+        chunks = self.chunker.chunk_documents(documents)
 
         if not chunks:
             raise ValueError(
@@ -93,9 +78,10 @@ class RAGPipeline:
             "stored_vectors": stored_vectors,
         }
 
-    # -----------------------------
+    # --------------------------------------------------
     # Repository Chat
-    # -----------------------------
+    # --------------------------------------------------
+
     def chat(
         self,
         project_id: str,

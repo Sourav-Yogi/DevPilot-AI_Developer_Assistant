@@ -1,5 +1,5 @@
 import crypto from "crypto";
-
+import path from "path";
 import Project from "../models/Project.js";
 import asyncHandler from "../utils/asyncHandler.js";
 
@@ -15,13 +15,15 @@ import {
 /**
  * Background indexing
  */
+
 const startIndexing = async (project) => {
   try {
+    const absolutePath = path.resolve(project.localPath);
     await indexRepository({
-      githubUrl: project.githubUrl,
-      localPath: project.localPath,
-      projectId: project.aiProjectId,
-    });
+    githubUrl: project.githubUrl,
+    localPath: absolutePath,
+    projectId: project.aiProjectId,
+});
 
     project.indexed = true;
     project.indexingStatus = "completed";

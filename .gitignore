@@ -1,6 +1,7 @@
-# ==========================
+# ======================================
 # Node.js
-# ==========================
+# ======================================
+
 node_modules/
 npm-debug.log*
 yarn-debug.log*
@@ -9,10 +10,7 @@ pnpm-debug.log*
 
 # Environment Variables
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
 
 # Logs
 logs/
@@ -27,18 +25,9 @@ coverage/
 .cache/
 .vite/
 
-# OS Files
-.DS_Store
-Thumbs.db
-
-# IDE
-.vscode/
-.idea/
-*.swp
-
-# ==========================
+# ======================================
 # Python
-# ==========================
+# ======================================
 
 __pycache__/
 *.py[cod]
@@ -51,85 +40,95 @@ env/
 ENV/
 
 # Python Build
-build/
-dist/
 *.egg-info/
 
-# Pytest
+# Python Cache
 .pytest_cache/
-
-# Mypy
 .mypy_cache/
-
-# Ruff
 .ruff_cache/
 
-# Coverage
 .coverage
 htmlcov/
 
-# Jupyter
 .ipynb_checkpoints/
 
-# ==========================
-# ChromaDB
-# ==========================
+# ======================================
+# ChromaDB / Vector Store
+# ======================================
 
 chroma_db/
 chromadb/
 chroma/
 
-# If your vector DB is stored elsewhere
 vector_db/
 vectorstore/
 
-# Repository Clones
+# ======================================
+# Repository Uploads / Clones
+# ======================================
+
+uploads/
 repositories/
 repos/
 cloned_repositories/
 temp_repo/
 
-# Uploaded Files
-uploads/
-
-# ==========================
-# FastAPI
-# ==========================
+# ======================================
+# Database Files
+# ======================================
 
 *.db
 *.sqlite3
 
-# ==========================
+# ======================================
 # React
-# ==========================
+# ======================================
 
 client/node_modules/
 client/dist/
 
-# ==========================
+# ======================================
 # Express
-# ==========================
+# ======================================
 
 server/node_modules/
 
-# ==========================
+# ======================================
 # Secrets
-# ==========================
+# ======================================
 
 *.pem
 *.key
 *.crt
 service-account.json
 
-# ==========================
-# Misc
-# ==========================
+# ======================================
+# Archives
+# ======================================
 
 *.zip
 *.tar
 *.gz
 *.rar
 
-# Generated Reports
+# ======================================
+# Generated Files
+# ======================================
+
 reports/
 output/
+
+# ======================================
+# IDE
+# ======================================
+
+.vscode/
+.idea/
+*.swp
+
+# ======================================
+# OS Files
+# ======================================
+
+.DS_Store
+Thumbs.db

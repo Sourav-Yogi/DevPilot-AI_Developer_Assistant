@@ -1,6 +1,8 @@
 import os
 
 
+
+
 class RepositoryLoader:
 
     def __init__(self):
@@ -45,7 +47,6 @@ class RepositoryLoader:
         }
 
     def load_repository(self, repo_path: str):
-
         documents = []
 
         for root, dirs, files in os.walk(repo_path):
@@ -91,8 +92,10 @@ class RepositoryLoader:
                         }
                     )
 
-                except Exception:
-                    # Ignore unreadable files
+                except Exception as e:
+                    print(f"Error reading {file_path}: {e}")
+                    import traceback
+                    traceback.print_exc()
                     continue
 
         return documents
