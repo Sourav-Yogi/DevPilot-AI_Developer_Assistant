@@ -18,12 +18,15 @@ import {
 
 const startIndexing = async (project) => {
   try {
-    const absolutePath = path.resolve(project.localPath);
+    const absolutePath = project.localPath
+      ? path.resolve(project.localPath)
+      : null;
+
     await indexRepository({
-    githubUrl: project.githubUrl,
-    localPath: absolutePath,
-    projectId: project.aiProjectId,
-});
+      githubUrl: project.githubUrl,
+      localPath: absolutePath,
+      projectId: project.aiProjectId,
+    });
 
     project.indexed = true;
     project.indexingStatus = "completed";

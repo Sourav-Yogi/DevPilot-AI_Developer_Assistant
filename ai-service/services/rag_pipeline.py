@@ -1,3 +1,5 @@
+import shutil
+import os
 from sentence_transformers import SentenceTransformer
 
 from services.github_loader import GitHubLoader
@@ -34,49 +36,66 @@ class RAGPipeline:
         github_url: str = None,
         local_path: str = None,
     ):
+        repo_path = None
+        should_cleanup = False
 
-        if github_url:
-            repo_path = self.github_loader.clone_repository(
+        try:
+            if github_url:
+                repo_path = self.github_loader.clone_repository(
+                    github_url
+                )
+                should_cleanup = True
+
+            elif local_path:
+                repo_path = local_path
+
+            else:
+                raise ValueError(
+                    "Either github_url or local_path is required."
+                )
+            print("=" * 80)
+            print("Repository path:", repo_path)
+            print("Exists:", os.path.exists(repo_path))
+            print("Is Dir:", os.path.isdir(repo_path))
+
+            if os.path.exists(repo_path):
+                print("Files:", os.listdir(repo_path))
+
+            print("=" * 80)
+            print("Repository path:", repo_path)
+            documents = self.repository_loader.load_repository(repo_path)
+
+            if not documents:
+                raise ValueError(
+                    "No supported source code files found in the repository."
+                )
+
+            chunks = self.chunker.chunk_documents(documents)
+
+            if not chunks:
+                raise ValueError(
+                    "Repository contains no indexable content."
+                )
+
+            embedded_chunks = self.embedding_service.generate_embeddings(
+                chunks
+            )
+
+            stored_vectors = self.vector_store.store_embeddings(
                 project_id,
-                github_url,
-            )
-        elif local_path:
-            repo_path = local_path
-        else:
-            raise ValueError(
-                "Either github_url or local_path is required."
+                embedded_chunks,
             )
 
-        documents = self.repository_loader.load_repository(repo_path)
+            return {
+                "project_id": project_id,
+                "total_files": len(documents),
+                "total_chunks": len(chunks),
+                "stored_vectors": stored_vectors,
+            }
 
-        if not documents:
-            raise ValueError(
-                "No supported source code files found in the repository."
-            )
-
-        chunks = self.chunker.chunk_documents(documents)
-
-        if not chunks:
-            raise ValueError(
-                "Repository contains no indexable content."
-            )
-
-        embedded_chunks = self.embedding_service.generate_embeddings(
-            chunks
-        )
-
-        stored_vectors = self.vector_store.store_embeddings(
-            project_id,
-            embedded_chunks,
-        )
-
-        return {
-            "project_id": project_id,
-            "repository_path": repo_path,
-            "total_files": len(documents),
-            "total_chunks": len(chunks),
-            "stored_vectors": stored_vectors,
-        }
+        finally:
+            if should_cleanup and repo_path:
+                shutil.rmtree(repo_path, ignore_errors=True)
 
     # --------------------------------------------------
     # Repository Chat

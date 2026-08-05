@@ -63,6 +63,12 @@ def chat(request: ChatRequest):
         }
 
     except Exception as e:
+        import traceback
+
+        print("=" * 80)
+        traceback.print_exc()
+        print("=" * 80)
+
         raise HTTPException(
             status_code=500,
             detail=str(e),

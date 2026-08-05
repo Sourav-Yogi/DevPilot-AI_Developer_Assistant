@@ -1,0 +1,70 @@
+version: "3.9"
+
+services:
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: devpilot-client
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+    restart: unless-stopped
+    networks:
+      - devpilot-network
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: devpilot-server
+    env_file:
+      - ./server/.env
+    expose:
+      - "5000"
+    depends_on:
+      ai-service:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - devpilot-network
+
+    volumes:
+      - uploads_data:/app/uploads
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: devpilot-ai
+
+    env_file:
+      - ./ai-service/.env
+
+    expose:
+      - "8000"
+
+    restart: unless-stopped
+
+    volumes:
+      - chroma_data:/app/data/chroma_db
+      - uploads_data:/app/uploads
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/rag/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 120s
+
+    networks:
+      - devpilot-network
+
+volumes:
+  chroma_data:
+  uploads_data:
+
+networks:
+  devpilot-network:
+    driver: bridge
