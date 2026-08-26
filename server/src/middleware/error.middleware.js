@@ -7,9 +7,9 @@ const notFound = (req, res, next) => {
 };
 
 const errorHandler = (err, req, res, next) => {
-  console.error("========== ERROR ==========");
-  console.error(err);
-  console.error("===========================");
+  // console.error("========== ERROR ==========");
+  // console.error(err);
+  // console.error("===========================");
 
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
 

@@ -5,9 +5,9 @@ import unzipper from "unzipper";
 export const extractRepositoryZip = async (zipPath, projectId) => {
   const extractPath = path.join("uploads", "repositories", projectId);
 
-  console.log("======================================");
-  console.log("ZIP PATH:", zipPath);
-  console.log("EXTRACT PATH:", extractPath);
+  // console.log("======================================");
+  // console.log("ZIP PATH:", zipPath);
+  // console.log("EXTRACT PATH:", extractPath);
 
   fs.mkdirSync(extractPath, { recursive: true });
 
@@ -16,18 +16,18 @@ export const extractRepositoryZip = async (zipPath, projectId) => {
     .pipe(unzipper.Extract({ path: extractPath }))
     .promise();
 
-  console.log("EXTRACT EXISTS:", fs.existsSync(extractPath));
+  // console.log("EXTRACT EXISTS:", fs.existsSync(extractPath));
 
   const items = fs.readdirSync(extractPath);
 
-  console.log("ITEMS:", items);
+  // console.log("ITEMS:", items);
 
   if (
     items.length === 1 &&
     fs.statSync(path.join(extractPath, items[0])).isDirectory()
   ) {
     const finalPath = path.join(extractPath, items[0]);
-    console.log("RETURNING:", finalPath);
+    // console.log("RETURNING:", finalPath);
     return finalPath;
   }
 

@@ -1,6 +1,13 @@
+import logging
+
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -27,7 +34,4 @@ app.include_router(rag_router)
 
 @app.get("/")
 def home():
-    return {
-        "success": True,
-        "message": "DevPilot AI Service Running 🚀"
-    }
+    return {"success": True, "message": "DevPilot AI Service Running 🚀"}

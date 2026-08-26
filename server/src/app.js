@@ -2,12 +2,9 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-
 import authRoutes from "./routes/auth.routes.js";
-import { notFound, errorHandler } from "./middleware/error.middleware.js";
-import historyRoutes from "./routes/history.routes.js";
 import projectRoutes from "./routes/project.routes.js";
-// import dashboardRoutes from "./routes/dashboard.routes.js";
+import { notFound, errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
 
@@ -24,9 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api/history", historyRoutes);
 app.use("/api/projects", projectRoutes);
-// app.use("/api/dashboard", dashboardRoutes);
 app.use(notFound);
 app.use(errorHandler);
 
