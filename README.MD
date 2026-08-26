@@ -1,86 +1,166 @@
-# 🚀 DevPilot — Repository-Aware AI Developer Assistant
+# DevPilot — Intelligent Codebase Explorer
 
-DevPilot is a full-stack AI-powered developer assistant that enables developers to chat with any GitHub repository or uploaded ZIP project using Retrieval-Augmented Generation (RAG).
+DevPilot is a full-stack application that lets developers import a GitHub repository or upload a ZIP project and ask questions about the codebase.
 
-Instead of generating generic AI responses, DevPilot indexes the repository, creates vector embeddings, retrieves the most relevant source code, and uses Google Gemini to generate repository-grounded answers with contextual accuracy.
+It indexes the repository, creates embeddings for code chunks, stores them in ChromaDB, retrieves relevant code for a question, and uses Google Gemini to generate an answer based on the repository context.
 
-Whether you're onboarding to a new project, exploring an open-source repository, or understanding your own codebase, DevPilot acts like an AI teammate that understands the repository before answering.
+The AI service also keeps conversation history for multi-turn questions. A LangChain query-rewriting chain resolves follow-up references before retrieval, and a second LangChain chain generates the final answer from the retrieved repository context and conversation history.
 
----
+## Features
 
-## ✨ Features
+- JWT-based authentication and authorization
+- Import repositories using a GitHub URL
+- Upload ZIP projects
+- Repository indexing
+- Code chunking
+- Semantic code search
+- Sentence Transformer embeddings
+- ChromaDB vector storage
+- Repository-aware AI chat
+- Multi-turn conversational history
+- Follow-up question rewriting using conversation history
+- AI answers based on retrieved repository code
+- Source file attribution for retrieved code
+- FastAPI AI service
+- MERN-based application architecture
+- Docker and Docker Compose support
+- Nginx for the frontend container
 
-- 🔐 JWT Authentication & Authorization
-- 📂 Import repositories via GitHub URL
-- 📦 Upload ZIP repositories
-- 🤖 Repository-aware AI Chat
-- 🧠 Retrieval-Augmented Generation (RAG)
-- 🔍 Semantic Code Search
-- 📄 Automatic Repository Indexing
-- 💬 Context-aware Multi-turn Conversations
-- 📚 Source File Attribution
-- 📊 Repository Dashboard
-- ⚡ FastAPI AI Microservice
-- 🐳 Docker & Docker Compose Support
-- 🌐 MERN Stack Architecture
-
----
-
-# 🏗️ System Architecture
+## Architecture
 
 ```text
-                    +----------------------+
-                    |      React App       |
-                    +----------+-----------+
-                               |
-                         REST API (JWT)
-                               |
-                               ▼
-                 +-------------------------+
-                 | Node.js + Express Server |
-                 +-----------+-------------+
-                             |
-                             |
-                     AI Service Requests
-                             |
-                             ▼
-               +---------------------------+
-               |      FastAPI RAG Server    |
-               +-------------+-------------+
-                             |
-         -----------------------------------------------
-         |             |             |                  |
-         ▼             ▼             ▼                  ▼
- GitHub Clone     ZIP Upload    Chunk Files      ChromaDB
- Repository       Extraction                    Vector Store
-                             |
-                             ▼
-                 Sentence Transformer Embeddings
-                             |
-                             ▼
-                    Semantic Similarity Search
-                             |
-                             ▼
-                     Google Gemini 2.5 Flash
-                             |
-                             ▼
-                 Repository-grounded AI Response
+                    React Frontend
+                          |
+                    REST API + JWT
+                          |
+                          v
+                Node.js + Express
+                          |
+                    AI Service API
+                          |
+                          v
+                  FastAPI AI Service
+                          |
+          +---------------+---------------+
+          |               |               |
+          v               v               v
+     GitHub Loader   Repository Loader  ChromaDB
+          |               |               |
+          +------- Code Documents -------+
+                          |
+                          v
+                     Chunking
+                          |
+                          v
+               Sentence Transformers
+                          |
+                          v
+                    Embeddings
+                          |
+                          v
+                     Retriever
+                          |
+                          v
+              LangChain Query Rewrite
+                          |
+                          v
+                 Retrieved Code
+                          |
+                          v
+               LangChain Answer Chain
+                          |
+                          v
+                   Google Gemini
+                          |
+                          v
+                Answer + Source Files
 ```
 
----
+## RAG Flow
 
-# 📂 Project Structure
+### 1. Repository Import
+
+A user can either provide a GitHub repository URL or upload a ZIP project.
+
+### 2. Repository Loading
+
+The AI service loads the repository source files.
+
+### 3. Code Chunking
+
+The source files are divided into smaller code chunks for indexing and retrieval.
+
+### 4. Embedding Generation
+
+Each chunk is converted into an embedding using:
 
 ```text
-DevPilot
+sentence-transformers/all-MiniLM-L6-v2
+```
+
+### 5. Vector Storage
+
+The generated embeddings and associated metadata are stored in ChromaDB.
+
+### 6. User Question
+
+When the user asks a question, the conversation history is also passed to the AI service.
+
+### 7. Query Rewriting
+
+The LangChain query-rewriting chain uses the previous conversation to resolve references such as:
+
+```text
+it
+this function
+that middleware
+the previous one
+```
+
+It converts a contextual follow-up question into a standalone search query.
+
+### 8. Retrieval
+
+The rewritten query is used to retrieve relevant repository chunks from ChromaDB.
+
+### 9. Answer Generation
+
+The LangChain answer chain receives:
+
+- The user's question
+- Conversation history
+- Retrieved repository context
+
+Google Gemini then generates the repository-grounded answer.
+
+### 10. Source Attribution
+
+The application returns the paths of the retrieved source files along with the answer.
+
+## Tech Stack
+
+| Layer | Technologies |
+|---|---|
+| Frontend | React, Vite, Tailwind CSS, React Router, Axios, React Markdown |
+| Backend | Node.js, Express.js, MongoDB, Mongoose, JWT |
+| AI Service | Python, FastAPI, Uvicorn |
+| LLM | Google Gemini |
+| RAG | LangChain, ChromaDB, Sentence Transformers |
+| Embeddings | `all-MiniLM-L6-v2` |
+| DevOps | Docker, Docker Compose, Nginx |
+
+## Project Structure
+
+```text
+DevPilot-AI_Developer_Assistant/
 │
-├── client/                    # React Frontend
+├── client/
 │   ├── src/
 │   ├── public/
 │   ├── Dockerfile
 │   └── nginx.conf
 │
-├── server/                    # Express Backend
+├── server/
 │   ├── src/
 │   │   ├── controllers/
 │   │   ├── middleware/
@@ -90,8 +170,9 @@ DevPilot
 │   │   └── utils/
 │   └── Dockerfile
 │
-├── ai-service/                # FastAPI AI Service
+├── ai-service/
 │   ├── routes/
+│   │   └── rag.py
 │   ├── services/
 │   │   ├── github_loader.py
 │   │   ├── repository_loader.py
@@ -99,247 +180,136 @@ DevPilot
 │   │   ├── embedding_service.py
 │   │   ├── vector_store.py
 │   │   ├── retriever.py
-│   │   ├── prompt_builder.py
-│   │   ├── gemini_service.py
-│   │   └── rag_pipeline.py
+│   │   ├── rag_chain.py
+│   │   ├── rag_pipeline.py
+│   │   └── gemini_service.py
 │   ├── app.py
-│   └── Dockerfile
+│   ├── Dockerfile
+│   └── pyproject.toml
 │
-├── docker-compose.yml
-└── README.md
+├── assets/
+│   └── screenshots/
+│
+└── docker-compose.yml
 ```
 
----
+## Getting Started
 
-# ⚙️ Tech Stack
-
-| Layer | Technologies |
-|--------|--------------|
-| Frontend | React.js, Vite, Tailwind CSS, React Router, Axios, React Markdown |
-| Backend | Node.js, Express.js, MongoDB, Mongoose, JWT |
-| AI Service | FastAPI, Python |
-| LLM | Google Gemini 2.5 Flash |
-| RAG | LangChain, Sentence Transformers, ChromaDB |
-| Embedding Model | all-MiniLM-L6-v2 |
-| DevOps | Docker, Docker Compose, Nginx |
-| Tools | Git, GitHub, Postman |
-
----
-
-# ⚙️ How It Works
-
-## 1. User Adds Repository
-
-Users can either:
-
-- Import a public GitHub repository
-- Upload a ZIP project
-
-↓
-
-## 2. Repository Loading
-
-The AI service:
-
-- Clones GitHub repositories
-- Extracts uploaded ZIP files
-
-↓
-
-## 3. Repository Parsing
-
-Only supported source code files are loaded.
-
-↓
-
-## 4. Intelligent Chunking
-
-Large files are divided into semantic chunks.
-
-↓
-
-## 5. Embedding Generation
-
-Each chunk is converted into dense vector embeddings using Sentence Transformers.
-
-↓
-
-## 6. Vector Storage
-
-Embeddings are stored inside ChromaDB.
-
-↓
-
-## 7. AI Chat
-
-When a user asks a question:
-
-- The question is embedded.
-- Similar repository chunks are retrieved.
-- Relevant context is injected into the prompt.
-- Google Gemini generates a repository-grounded response.
-
----
-
-# 📸 Screenshots
-
-## Landing Page
-![Landing Page](assets/screenshots/landing-page.png)
-
-## Register
-![Register](assets/screenshots/register.png)
-
-## Login
-![Login](assets/screenshots/login.png)
-
-## Dashboard
-![Dashboard](assets/screenshots/dashboard.png)
-
-## Add GitHub Repository
-![Add GitHub Repository](assets/screenshots/add-repository.png)
-
-## Repository Indexing
-![Repository Indexing](assets/screenshots/repository-indexing.png)
-
-## AI Chat
-![AI Chat](assets/screenshots/ai-chat.png)
-
----
-
-# 🚀 Getting Started
-
-## Clone the Repository
+### Clone the Repository
 
 ```bash
 git clone https://github.com/Sourav-Yogi/DevPilot-AI_Developer_Assistant.git
-
 cd DevPilot-AI_Developer_Assistant
 ```
 
----
+## Run with Docker
 
-# 🐳 Run with Docker
+Make sure Docker and Docker Compose are installed.
 
 ```bash
 docker compose up --build
 ```
 
-The application will be available at:
+The Docker Compose configuration contains three services:
 
-- Frontend → http://localhost
-- Backend → http://localhost:5000
-- AI Service → http://localhost:8000
+- Client
+- Server
+- AI Service
 
----
+The client is exposed on port `80`. The server uses port `5000` internally, and the AI service uses port `8000` internally.
 
-# 💻 Run Locally
+## Run Locally
 
-## Frontend
+### Frontend
 
 ```bash
 cd client
-
 npm install
-
 npm run dev
 ```
 
----
-
-## Backend
+### Backend
 
 ```bash
 cd server
-
 npm install
-
 npm run dev
 ```
 
----
+### AI Service
 
-## AI Service
+The AI service uses `uv` for Python environment and dependency management.
 
 ```bash
 cd ai-service
-
 uv sync
-
 uv run uvicorn app:app --reload
 ```
 
----
+## Environment Variables
 
-# 🔑 Environment Variables
-
-## server/.env
+### `server/.env`
 
 ```env
 PORT=5000
-
 MONGODB_URI=your_mongodb_connection_string
-
 JWT_SECRET=your_jwt_secret
-
 AI_SERVICE_URL=http://127.0.0.1:8000
 ```
 
----
-
-## ai-service/.env
+### `ai-service/.env`
 
 ```env
 GEMINI_API_KEY=your_google_gemini_api_key
-
 CHROMA_DB_PATH=/app/data/chroma_db
 ```
 
----
+Do not commit real API keys or other secrets to the repository.
 
-# 📈 Future Improvements
+## Docker Volumes
 
-- Hybrid Search (Keyword + Semantic Search)
-- Repository Visualization
-- Repository Summarization
-- Streaming AI Responses
-- Pull Request Review Assistant
-- Multi-Repository Chat
-- Codebase Diff Analysis
-- Reranking Pipeline
-- File-aware Retrieval
-- Agentic Repository Workflows
+Docker Compose uses persistent volumes for:
 
----
+```text
+chroma_data
+uploads_data
+```
 
-# 🧠 Key Learnings
+The ChromaDB volume stores the vector database data used by the AI service.
 
-This project helped me gain hands-on experience with:
+## Screenshots
 
-- Retrieval-Augmented Generation (RAG)
-- Vector Databases (ChromaDB)
-- Semantic Search
-- Embedding Models
-- Prompt Engineering
-- LangChain
-- Google Gemini API
-- FastAPI Microservices
-- MERN Stack Architecture
-- Docker & Docker Compose
-- Repository Parsing
-- AI System Design
-- REST API Development
+### Landing Page
 
----
+![Landing Page](assets/screenshots/landing-page.png)
 
-# 👨‍💻 Author
+### Register
+
+![Register](assets/screenshots/register.png)
+
+### Login
+
+![Login](assets/screenshots/login.png)
+
+### Dashboard
+
+![Dashboard](assets/screenshots/dashboard.png)
+
+### Add Repository
+
+![Add Repository](assets/screenshots/add-repository.png)
+
+### Repository Indexing
+
+![Repository Indexing](assets/screenshots/repository-indexing.png)
+
+### AI Chat
+
+![AI Chat](assets/screenshots/ai-chat.png)
+
+## Author
 
 **Sourav Yogi**
 
 - GitHub: https://github.com/Sourav-Yogi
 - LinkedIn: https://www.linkedin.com/in/sourav-yogi
-
----
-
-## ⭐ Support
-
-If you found this project useful, please consider giving it a ⭐ on GitHub. It helps others discover the project and motivates further development.

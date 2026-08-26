@@ -48,6 +48,7 @@ const Chat = () => {
         {
           role: "assistant",
           content: res.data.data.answer,
+          sources: res.data.data.sources || [],
         },
       ]);
     } catch (err) {
@@ -122,6 +123,24 @@ const Chat = () => {
 >
   {msg.content}
 </ReactMarkdown>
+{msg.role === "assistant" && msg.sources?.length > 0 && (
+  <div className="mt-4 border-t border-gray-300 pt-3">
+    <p className="mb-2 text-sm font-semibold text-gray-700">
+      Sources
+    </p>
+
+    <ul className="space-y-1">
+      {msg.sources.map((source, sourceIndex) => (
+        <li
+          key={sourceIndex}
+          className="text-sm text-gray-600"
+        >
+          {source}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
             </div>
           ))}
 

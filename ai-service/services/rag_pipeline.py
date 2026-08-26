@@ -270,7 +270,6 @@ class RAGPipeline:
             question=question,
             history=history,
         )
-
         retrieved_chunks = self.retriever.retrieve(
             project_id=project_id,
             question=search_query,

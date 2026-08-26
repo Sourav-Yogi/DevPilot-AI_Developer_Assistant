@@ -133,7 +133,7 @@ export const getProjectById = asyncHandler(async (req, res) => {
  * @route POST /api/projects/:id/chat
  */
 export const chatWithProject = asyncHandler(async (req, res) => {
-  const { question } = req.body;
+  const { question, history = [] } = req.body;
 
   if (!question) {
     res.status(400);
@@ -157,9 +157,10 @@ export const chatWithProject = asyncHandler(async (req, res) => {
     throw new Error("Repository is still indexing.");
   }
 
-  const response = await chatWithRepository(
+const response = await chatWithRepository(
   project.aiProjectId,
-  question
+  question,
+  history
 );
 
   res.status(200).json({
